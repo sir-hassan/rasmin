@@ -1,0 +1,53 @@
+image: docker:19.03
+
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm-cache/
+
+stages:
+  - build
+  - test
+  - push
+
+services:
+  - docker:19.03-dind
+
+before_script:
+  - docker info
+
+build:
+  stage: build
+  tags: [docker, dind, privileged]
+  script:
+    - docker build -t rasmin:dev .
+    - docker save rasmin:dev > rasmin.$CI_COMMIT_SHA.tar
+  artifacts:
+    paths:
+      - rasmin.$CI_COMMIT_SHA.tar
+
+test:
+  stage: test
+  tags: [docker, dind, privileged]
+  script:
+    # install docker-compose
+    - apk add docker-compose
+    - docker load -i rasmin.$CI_COMMIT_SHA.tar
+    - docker-compose run api npm run wait-dump-test
+    - docker-compose down
+
+push:
+  stage: push
+  tags: [docker, dind, privileged]
+  only:
+    - master
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker load -i rasmin.$CI_COMMIT_SHA.tar
+    - docker tag rasmin:dev $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag rasmin:dev $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest

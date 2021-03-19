@@ -1,0 +1,26 @@
+{
+    "extends": ["eslint:recommended", "google"],
+    "env": {
+        "node": true,
+        "jest": true,
+        "es2020": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    },
+    "rules": {
+        "semi": ["error","never"],
+        "indent": ["error", 4],
+        "max-len": ["error", { "code": 100 }],
+        "require-jsdoc": ["error", {
+            "require": {
+                "FunctionDeclaration": false,
+                "MethodDefinition": false,
+                "ClassDeclaration": false,
+                "ArrowFunctionExpression": false,
+                "FunctionExpression": false
+            }
+        }]
+    }
+}

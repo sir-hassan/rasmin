@@ -1,0 +1,28 @@
+version: "3"
+services:
+  db:
+    image: mysql
+    command: ["--default-authentication-plugin=mysql_native_password"]
+    env_file: .env
+    networks:
+      - rasmin-net
+  redis:
+    image: redis:6
+    networks:
+      - rasmin-net
+  api:
+    image: rasmin:dev
+    command: "npm run wait-dump-start"
+    ports:
+      - "${MK_RASMIN_PORT}:${MK_RASMIN_PORT}"
+    env_file: .env
+    environment:
+      NODE_ENV: "${MK_RASMIN_ENV}"
+    restart: always
+    depends_on:
+      - db
+      - redis
+    networks:
+      - rasmin-net
+networks:
+  rasmin-net:

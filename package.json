@@ -1,0 +1,39 @@
+{
+  "name": "rasmin",
+  "version": "1.0.0",
+  "description": "Rasmin Rest API",
+  "scripts": {
+    "wait-db": "npx wait-on tcp:$MK_DB_HOST:$MK_DB_PORT",
+    "wait-redis": "npx wait-on tcp:$MK_REDIS_HOST:$MK_REDIS_PORT",
+    "wait": "npm run wait-db && npm run wait-redis",
+    "build": "rm -rf dist && babel src -d dist",
+    "dump": "node dist/dump.js",
+    "test": "npx jest  --runInBand --detectOpenHandles --rootDir dist",
+    "start": "node dist/index.js",
+    "wait-dump-test": "npm run wait && npm run dump && npm run test",
+    "wait-dump-start": "npm run wait && npm run dump && npm run start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/mikrogo/rasmin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "ioredis": "^4.17.3",
+    "mysql": "^2.18.1",
+    "uuid": "^8.2.0",
+    "wait-on": "^5.0.3"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.10.5",
+    "@babel/preset-env": "^7.10.4",
+    "eslint": "^7.5.0",
+    "eslint-config-google": "^0.14.0",
+    "jest": "^26.1.0",
+    "supertest": "^4.0.2"
+  }
+}
